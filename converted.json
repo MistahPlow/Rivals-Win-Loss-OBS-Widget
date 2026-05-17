@@ -1,0 +1,245 @@
+[
+    {
+        "tag": "div",
+        "attr": {
+            "id": "counter-container",
+            "class": "glass w-80 p-4 flex flex-col gap-2 relative animate-in fade-in slide-in-from-bottom-4 duration-700"
+        },
+        "children": [
+            {
+                "tag": "div",
+                "attr": {
+                    "class": "flex justify-between items-center border-b border-white/10 pb-1 mb-1"
+                },
+                "children": [
+                    {
+                        "tag": "span",
+                        "attr": {
+                            "class": "text-white text-lg font-black italic tracking-wider uppercase skew-content"
+                        },
+                        "children": [
+                            "Ranked Session"
+                        ]
+                    },
+                    {
+                        "tag": "div",
+                        "attr": {
+                            "class": "flex items-center gap-2 skew-content"
+                        },
+                        "children": [
+                            {
+                                "tag": "button",
+                                "attr": {
+                                    "onclick": "updateRank(-1)",
+                                    "class": "btn-control bg-white/5 hover:bg-white/10 w-5 h-5 flex items-center justify-center text-white/50 hover:text-white rounded border border-white/10 text-xs"
+                                },
+                                "children": [
+                                    "-"
+                                ]
+                            },
+                            {
+                                "tag": "div",
+                                "attr": {
+                                    "id": "rank-display",
+                                    "class": "text-sm font-bold uppercase italic bg-white/5 px-2 py-0.5 rounded border border-white/10 min-w-[100px] text-center"
+                                },
+                                "children": [
+                                    "PLATINUM I"
+                                ]
+                            },
+                            {
+                                "tag": "button",
+                                "attr": {
+                                    "onclick": "updateRank(1)",
+                                    "class": "btn-control bg-[#00f5d4]/20 hover:bg-[#00f5d4]/40 w-5 h-5 flex items-center justify-center text-[#00f5d4] rounded border border-[#00f5d4]/30 text-xs"
+                                },
+                                "children": [
+                                    "+"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "tag": "div",
+                "attr": {
+                    "class": "flex items-center justify-around py-2"
+                },
+                "children": [
+                    {
+                        "tag": "div",
+                        "attr": {
+                            "class": "flex flex-col items-center"
+                        },
+                        "children": [
+                            {
+                                "tag": "span",
+                                "attr": {
+                                    "class": "text-xs text-white/60 uppercase font-bold tracking-widest italic skew-content"
+                                },
+                                "children": [
+                                    "Wins"
+                                ]
+                            },
+                            {
+                                "tag": "div",
+                                "attr": {
+                                    "class": "flex items-center gap-4"
+                                },
+                                "children": [
+                                    {
+                                        "tag": "button",
+                                        "attr": {
+                                            "onclick": "updateStat('wins', -1)",
+                                            "class": "btn-control bg-white/5 hover:bg-white/10 w-6 h-6 flex items-center justify-center text-white/50 hover:text-white rounded border border-white/10"
+                                        },
+                                        "children": [
+                                            "-"
+                                        ]
+                                    },
+                                    {
+                                        "tag": "span",
+                                        "attr": {
+                                            "id": "wins-val",
+                                            "class": "win-text text-5xl font-black italic skew-content"
+                                        },
+                                        "children": [
+                                            "0"
+                                        ]
+                                    },
+                                    {
+                                        "tag": "button",
+                                        "attr": {
+                                            "onclick": "updateStat('wins', 1)",
+                                            "class": "btn-control bg-[#00f5d4]/20 hover:bg-[#00f5d4]/40 w-6 h-6 flex items-center justify-center text-[#00f5d4] rounded border border-[#00f5d4]/30"
+                                        },
+                                        "children": [
+                                            "+"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "tag": "div",
+                        "attr": {
+                            "class": "h-12 w-[2px] bg-white/10 transform -rotate-12"
+                        }
+                    },
+                    {
+                        "tag": "div",
+                        "attr": {
+                            "class": "flex flex-col items-center"
+                        },
+                        "children": [
+                            {
+                                "tag": "span",
+                                "attr": {
+                                    "class": "text-xs text-white/60 uppercase font-bold tracking-widest italic skew-content"
+                                },
+                                "children": [
+                                    "Losses"
+                                ]
+                            },
+                            {
+                                "tag": "div",
+                                "attr": {
+                                    "class": "flex items-center gap-4"
+                                },
+                                "children": [
+                                    {
+                                        "tag": "button",
+                                        "attr": {
+                                            "onclick": "updateStat('losses', -1)",
+                                            "class": "btn-control bg-white/5 hover:bg-white/10 w-6 h-6 flex items-center justify-center text-white/50 hover:text-white rounded border border-white/10"
+                                        },
+                                        "children": [
+                                            "-"
+                                        ]
+                                    },
+                                    {
+                                        "tag": "span",
+                                        "attr": {
+                                            "id": "losses-val",
+                                            "class": "loss-text text-5xl font-black italic skew-content"
+                                        },
+                                        "children": [
+                                            "0"
+                                        ]
+                                    },
+                                    {
+                                        "tag": "button",
+                                        "attr": {
+                                            "onclick": "updateStat('losses', 1)",
+                                            "class": "btn-control bg-[#ff4d6d]/20 hover:bg-[#ff4d6d]/40 w-6 h-6 flex items-center justify-center text-[#ff4d6d] rounded border border-[#ff4d6d]/30"
+                                        },
+                                        "children": [
+                                            "+"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "tag": "div",
+                "attr": {
+                    "class": "flex justify-between items-center text-[10px] text-white/40 uppercase font-bold italic tracking-tighter mt-1"
+                },
+                "children": [
+                    {
+                        "tag": "div",
+                        "attr": {
+                            "id": "streak-text",
+                            "class": "skew-content"
+                        },
+                        "children": [
+                            "Session Streak:",
+                            {
+                                "tag": "span",
+                                "attr": {
+                                    "class": "text-white"
+                                },
+                                "children": [
+                                    "Neutral"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "tag": "button",
+                        "attr": {
+                            "onclick": "resetStats()",
+                            "class": "hover:text-white transition-colors cursor-pointer skew-content"
+                        },
+                        "children": [
+                            "Reset Session"
+                        ]
+                    }
+                ]
+            },
+            {
+                "tag": "div",
+                "attr": {
+                    "class": "absolute -top-1 -right-1 w-8 h-[2px] bg-[#00f5d4]"
+                }
+            },
+            {
+                "tag": "div",
+                "attr": {
+                    "class": "absolute -bottom-1 -left-1 w-8 h-[2px] bg-[#9d4edd]"
+                }
+            }
+        ]
+    },
+    {
+        "tag": "script",
+        "children": [
+            "let stats = {\n      wins: 0,\n      losses: 0\n    };\n\n    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();\n\n    function playSound(type) {\n      const oscillator = audioCtx.createOscillator();\n      const gainNode = audioCtx.createGain();\n\n      oscillator.connect(gainNode);\n      gainNode.connect(audioCtx.destination);\n\n      if (type === 'win') {\n        oscillator.type = 'sine';\n        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);\n        oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);\n        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);\n        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);\n        oscillator.start();\n        oscillator.stop(audioCtx.currentTime + 0.3);\n      } else if (type === 'loss') {\n        oscillator.type = 'sawtooth';\n        oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);\n        oscillator.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.2);\n        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);\n        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);\n        oscillator.start();\n        oscillator.stop(audioCtx.currentTime + 0.4);\n      } else {\n        oscillator.type = 'sine';\n        oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);\n        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);\n        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);\n        oscillator.start();\n        oscillator.stop(audioCtx.currentTime + 0.1);\n      }\n    }\n\n    function updateStat(key, delta) {\n      stats[key] = Math.max(0, stats[key] + delta);\n      document.getElementById(`${key}-val`).innerText = stats[key];\n      \n      // Update streak\n      const streakText = document.getElementById('streak-text');\n      const diff = stats.wins - stats.losses;\n      if (diff > 0) {\n        streakText.innerHTML = `Session Streak: <span class=\"text-[#00f5d4]\">+${diff} Wins</span>`;\n      } else if (diff < 0) {\n        streakText.innerHTML = `Session Streak: <span class=\"text-[#ff4d6d]\">${diff} Losses</span>`;\n      } else {\n        streakText.innerHTML = `Session Streak: <span class=\"text-white\">Neutral</span>`;\n      }\n\n      if (delta > 0) {\n        playSound(key === 'wins' ? 'win' : 'loss');\n        // Add a little pop animation\n        const el = document.getElementById(`${key}-val`);\n        el.classList.remove('animate-bounce');\n        void el.offsetWidth; // trigger reflow\n        el.classList.add('animate-bounce');\n        setTimeout(() => el.classList.remove('animate-bounce'), 500);\n      } else {\n        playSound('reset');\n      }\n\n      saveStats();\n    }\n\n    function resetStats() {\n      if (confirm('Reset session stats?')) {\n        stats.wins = 0;\n        stats.losses = 0;\n        document.getElementById('wins-val').innerText = '0';\n        document.getElementById('losses-val').innerText = '0';\n        document.getElementById('streak-text').innerHTML = `Session Streak: <span class=\"text-white\">Neutral</span>`;\n        playSound('reset');\n        saveStats();\n      }\n    }\n\n    function saveStats() {\n      localStorage.setItem('marvel_rivals_stats', JSON.stringify(stats));\n    }\n\n    function loadStats() {\n      const saved = localStorage.getItem('marvel_rivals_stats');\n      if (saved) {\n        stats = JSON.parse(saved);\n        document.getElementById('wins-val').innerText = stats.wins;\n        document.getElementById('losses-val').innerText = stats.losses;\n        updateStat('wins', 0); // trigger streak update\n      }\n    }\n\n    // Rank selector (cycle through Marvel Rivals ranks)\n    const baseRanks = [\"BRONZE\", \"SILVER\", \"GOLD\", \"PLATINUM\", \"DIAMOND\", \"GRANDMASTER\", \"CELESTIAL\"];\n    const specialRanks = [\"ETERNITY\", \"ONE ABOVE ALL\"];\n    \n    // Generate full list: Tier III, Tier II, Tier I for base ranks\n    const ranks = [];\n    baseRanks.forEach(r => {\n      ranks.push(`${r} III`);\n      ranks.push(`${r} II`);\n      ranks.push(`${r} I`);\n    });\n    ranks.push(...specialRanks);\n\n    const rankColors = {\n      \"BRONZE\": \"#cd7f32\",\n      \"SILVER\": \"#c0c0c0\",\n      \"GOLD\": \"#ffd700\",\n      \"PLATINUM\": \"#a5f3fc\",\n      \"DIAMOND\": \"#3b82f6\",\n      \"GRANDMASTER\": \"#7e22ce\",\n      \"CELESTIAL\": \"#f97316\",\n      \"ETERNITY\": \"#d8b4fe\",\n      \"ONE ABOVE ALL\": \"#ef4444\"\n    };\n\n    let currentRankIndex = 11; // Default to Platinum I\n    function updateRank(delta) {\n      currentRankIndex = (currentRankIndex + delta + ranks.length) % ranks.length;\n      const rankName = ranks[currentRankIndex];\n      const display = document.getElementById('rank-display');\n      display.innerText = rankName;\n      \n      // Extract base rank for color\n      const base = Object.keys(rankColors).find(b => rankName.startsWith(b));\n      if (base) {\n        display.style.color = rankColors[base];\n        display.style.borderColor = `${rankColors[base]}33`; // 20% opacity border\n        display.style.textShadow = `0 0 10px ${rankColors[base]}44`;\n      }\n\n      if (delta !== 0) playSound('reset');\n      localStorage.setItem('marvel_rivals_rank', rankName);\n    }\n\n    const savedRank = localStorage.getItem('marvel_rivals_rank');\n    if (savedRank) {\n      currentRankIndex = ranks.indexOf(savedRank);\n      if (currentRankIndex === -1) currentRankIndex = 11; \n    }\n    updateRank(0); // Initialize colors\n\n    loadStats();\n\n    // Initial Firehose setup (optional: react to chat if streamer wants to use !win / !loss)\n    const firehose = new Firehose();\n    firehose.on(\"chat\", (msg) => {\n      // Only streamer or mods can update\n      if (msg.sender.roles.includes('BROADCASTER') || msg.sender.roles.includes('MODERATOR')) {\n        if (msg.raw.toLowerCase() === '!win') updateStat('wins', 1);\n        if (msg.raw.toLowerCase() === '!loss') updateStat('losses', 1);\n        if (msg.raw.toLowerCase() === '!reset') {\n            stats.wins = 0;\n            stats.losses = 0;\n            updateStat('wins', 0);\n            updateStat('losses', 0);\n        }\n      }\n    });"
+        ]
+    }
+]
