@@ -1,0 +1,279 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marvel Rivals W/L Counter</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="/cdn/v1/firehose.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,900;1,900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    @import "tailwindcss";
+
+    body {
+      background: transparent;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Barlow Condensed', sans-serif;
+      user-select: none;
+    }
+
+    .marvel-gradient {
+      background: linear-gradient(135deg, rgba(0, 245, 212, 0.9) 0%, rgba(157, 78, 221, 0.9) 100%);
+    }
+
+    .glass {
+      background: rgba(10, 10, 20, 0.85);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(0, 245, 212, 0.3);
+      clip-path: polygon(0% 0%, 95% 0%, 100% 20%, 100% 100%, 5% 100%, 0% 80%);
+    }
+
+    .skew-content {
+      transform: skew(-10deg);
+    }
+
+    .win-text {
+      color: #22c55e;
+      text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+    }
+
+    .loss-text {
+      color: #ff4d6d;
+      text-shadow: 0 0 10px rgba(255, 77, 109, 0.5);
+    }
+
+    button:active {
+      transform: scale(0.9);
+    }
+
+    .btn-control {
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center h-screen">
+
+  <div id="counter-container" class="glass w-80 p-4 flex flex-col gap-2 relative animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <!-- Header -->
+    <div class="flex justify-between items-center border-b border-white/10 pb-1 mb-1">
+      <span class="text-white text-lg font-black italic tracking-wider uppercase skew-content">Ranked Session</span>
+      <div class="flex items-center gap-2 skew-content">
+        <button onclick="updateRank(-1)" class="btn-control bg-white/5 hover:bg-white/10 w-5 h-5 flex items-center justify-center text-white/50 hover:text-white rounded border border-white/10 text-xs">-</button>
+        <div id="rank-display" class="text-sm font-bold uppercase italic bg-white/5 px-2 py-0.5 rounded border border-white/10 min-w-[100px] text-center">
+          PLATINUM I
+        </div>
+        <button onclick="updateRank(1)" class="btn-control bg-[#00f5d4]/20 hover:bg-[#00f5d4]/40 w-5 h-5 flex items-center justify-center text-[#00f5d4] rounded border border-[#00f5d4]/30 text-xs">+</button>
+      </div>
+    </div>
+
+    <!-- Main Stats -->
+    <div class="flex items-center justify-around py-2">
+      <!-- Wins -->
+      <div class="flex flex-col items-center">
+        <span class="text-xs text-white/60 uppercase font-bold tracking-widest italic skew-content">Wins</span>
+        <div class="flex items-center gap-4">
+          <button onclick="updateStat('wins', -1)" class="btn-control bg-white/5 hover:bg-white/10 w-6 h-6 flex items-center justify-center text-white/50 hover:text-white rounded border border-white/10">-</button>
+          <span id="wins-val" class="win-text text-5xl font-black italic skew-content">0</span>
+          <button onclick="updateStat('wins', 1)" class="btn-control bg-[#00f5d4]/20 hover:bg-[#00f5d4]/40 w-6 h-6 flex items-center justify-center text-[#00f5d4] rounded border border-[#00f5d4]/30">+</button>
+        </div>
+      </div>
+
+      <div class="h-12 w-[2px] bg-white/10 transform -rotate-12"></div>
+
+      <!-- Losses -->
+      <div class="flex flex-col items-center">
+        <span class="text-xs text-white/60 uppercase font-bold tracking-widest italic skew-content">Losses</span>
+        <div class="flex items-center gap-4">
+          <button onclick="updateStat('losses', -1)" class="btn-control bg-white/5 hover:bg-white/10 w-6 h-6 flex items-center justify-center text-white/50 hover:text-white rounded border border-white/10">-</button>
+          <span id="losses-val" class="loss-text text-5xl font-black italic skew-content">0</span>
+          <button onclick="updateStat('losses', 1)" class="btn-control bg-[#ff4d6d]/20 hover:bg-[#ff4d6d]/40 w-6 h-6 flex items-center justify-center text-[#ff4d6d] rounded border border-[#ff4d6d]/30">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer / Streak -->
+    <div class="flex justify-between items-center text-xs text-white/40 uppercase font-bold italic tracking-tighter mt-2 border-t border-white/5 pt-2">
+      <div id="streak-text" class="skew-content">Session Streak: <span class="text-white text-sm">Neutral</span></div>
+      <div id="win-rate-text" class="skew-content text-white/60">Win Rate: <span class="text-white text-lg">0%</span></div>
+      <button onclick="resetStats()" class="hover:text-white transition-colors cursor-pointer skew-content text-[10px]">Reset Session</button>
+    </div>
+
+    <!-- Accent Lines -->
+    <div class="absolute -top-1 -right-1 w-8 h-[2px] bg-[#00f5d4]"></div>
+    <div class="absolute -bottom-1 -left-1 w-8 h-[2px] bg-[#9d4edd]"></div>
+  </div>
+
+  <script>
+    let stats = {
+      wins: 0,
+      losses: 0
+    };
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      if (type === 'win') {
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.3);
+      } else if (type === 'loss') {
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.2);
+        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.4);
+      } else {
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.1);
+      }
+    }
+
+    function updateStat(key, delta) {
+      stats[key] = Math.max(0, stats[key] + delta);
+      document.getElementById(`${key}-val`).innerText = stats[key];
+      
+      // Update streak
+      const streakText = document.getElementById('streak-text');
+      const diff = stats.wins - stats.losses;
+      if (diff > 0) {
+        streakText.innerHTML = `Session Streak: <span class="text-[#22c55e] text-sm">+${diff} Wins</span>`;
+      } else if (diff < 0) {
+        streakText.innerHTML = `Session Streak: <span class="text-[#ff4d6d] text-sm">${diff} Losses</span>`;
+      } else {
+        streakText.innerHTML = `Session Streak: <span class="text-white text-sm">Neutral</span>`;
+      }
+
+      // Update win rate
+      const total = stats.wins + stats.losses;
+      const winRate = total === 0 ? 0 : Math.round((stats.wins / total) * 100);
+      document.getElementById('win-rate-text').innerHTML = `Win Rate: <span class="text-white text-lg">${winRate}%</span>`;
+
+      if (delta > 0) {
+        playSound(key === 'wins' ? 'win' : 'loss');
+        // Add a little pop animation
+        const el = document.getElementById(`${key}-val`);
+        el.classList.remove('animate-bounce');
+        void el.offsetWidth; // trigger reflow
+        el.classList.add('animate-bounce');
+        setTimeout(() => el.classList.remove('animate-bounce'), 500);
+      } else {
+        playSound('reset');
+      }
+
+      saveStats();
+    }
+
+    function resetStats() {
+      if (confirm('Reset session stats?')) {
+        stats.wins = 0;
+        stats.losses = 0;
+        updateStat('wins', 0); // This will update UI for wins, streak, and win rate
+        updateStat('losses', 0); // This will update UI for losses
+        playSound('reset');
+        saveStats();
+      }
+    }
+
+    function saveStats() {
+      localStorage.setItem('marvel_rivals_stats', JSON.stringify(stats));
+    }
+
+    function loadStats() {
+      const saved = localStorage.getItem('marvel_rivals_stats');
+      if (saved) {
+        stats = JSON.parse(saved);
+        document.getElementById('wins-val').innerText = stats.wins;
+        document.getElementById('losses-val').innerText = stats.losses;
+        updateStat('wins', 0); // trigger streak update
+      }
+    }
+
+    // Rank selector (cycle through Marvel Rivals ranks)
+    const baseRanks = ["BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND", "GRANDMASTER", "CELESTIAL"];
+    const specialRanks = ["ETERNITY", "ONE ABOVE ALL"];
+    
+    // Generate full list: Tier III, Tier II, Tier I for base ranks
+    const ranks = ["PLACEMENTS"];
+    baseRanks.forEach(r => {
+      ranks.push(`${r} III`);
+      ranks.push(`${r} II`);
+      ranks.push(`${r} I`);
+    });
+    ranks.push(...specialRanks);
+
+    const rankColors = {
+      "PLACEMENTS": "#86efac",
+      "BRONZE": "#cd7f32",
+      "SILVER": "#c0c0c0",
+      "GOLD": "#ffd700",
+      "PLATINUM": "#a5f3fc",
+      "DIAMOND": "#3b82f6",
+      "GRANDMASTER": "#7e22ce",
+      "CELESTIAL": "#f97316",
+      "ETERNITY": "#d8b4fe",
+      "ONE ABOVE ALL": "#ef4444"
+    };
+
+    let currentRankIndex = 12; // Adjusted to Platinum I (1 + 3*3 + 2 = 12 since PLACEMENTS is at 0)
+    function updateRank(delta) {
+      currentRankIndex = (currentRankIndex + delta + ranks.length) % ranks.length;
+      const rankName = ranks[currentRankIndex];
+      const display = document.getElementById('rank-display');
+      display.innerText = rankName;
+      
+      // Extract base rank for color
+      const base = Object.keys(rankColors).find(b => rankName.startsWith(b));
+      if (base) {
+        display.style.color = rankColors[base];
+        display.style.borderColor = `${rankColors[base]}33`; // 20% opacity border
+        display.style.textShadow = `0 0 10px ${rankColors[base]}44`;
+      }
+
+      if (delta !== 0) playSound('reset');
+      localStorage.setItem('marvel_rivals_rank', rankName);
+    }
+
+    const savedRank = localStorage.getItem('marvel_rivals_rank');
+    if (savedRank) {
+      currentRankIndex = ranks.indexOf(savedRank);
+      if (currentRankIndex === -1) currentRankIndex = 12; 
+    }
+    updateRank(0); // Initialize colors
+
+    loadStats();
+
+    // Initial Firehose setup (optional: react to chat if streamer wants to use !win / !loss)
+    const firehose = new Firehose();
+    firehose.on("chat", (msg) => {
+      // Only streamer or mods can update
+      if (msg.sender.roles.includes('BROADCASTER') || msg.sender.roles.includes('MODERATOR')) {
+        if (msg.raw.toLowerCase() === '!win') updateStat('wins', 1);
+        if (msg.raw.toLowerCase() === '!loss') updateStat('losses', 1);
+        if (msg.raw.toLowerCase() === '!reset') {
+            stats.wins = 0;
+            stats.losses = 0;
+            updateStat('wins', 0);
+            updateStat('losses', 0);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
