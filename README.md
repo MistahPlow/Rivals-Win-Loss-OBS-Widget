@@ -5,4 +5,4 @@ Click the local file box under in browser source
 Find the widget HTML file you downloaded
 right click browser source scroll down to interact to change ranks and numbers in OBS 
 
-<img width="156" height="91" alt="Screenshot 2026-05-19 130810" src="https://github.com/user-attachments/assets/6a23850e-017c-4010-83d1-07f968299b7d" />
+<img width="157" height="95" alt="Screenshot 2026-05-19 133835" src="https://github.com/user-attachments/assets/f1d211a1-fe3e-43d3-bd42-b1dce7c12b7a" />
