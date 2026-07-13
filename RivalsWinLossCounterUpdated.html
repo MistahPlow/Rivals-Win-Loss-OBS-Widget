@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marvel Rivals W/L Counter Health Bar Style</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://elements.meldstudio.co/cdn/v1/firehose.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
+  <style>
+    @import "tailwindcss";
+
+    body {
+      background: transparent;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Barlow Condensed', sans-serif;
+      user-select: none;
+    }
+
+    /* Tapered container to match health bar vibes */
+    .health-style-container {
+      background: rgba(8, 8, 12, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      clip-path: polygon(2% 0%, 98% 0%, 100% 100%, 0% 100%);
+      padding-top: 4px;
+      padding-bottom: 2px;
+    }
+
+    .skew-text {
+      transform: skew(-12deg);
+    }
+
+    .win-color { color: #22c55e; }
+    .loss-color { color: #ff4d6d; }
+
+    .btn-action {
+      @apply flex items-center justify-center transition-all duration-100 active:scale-90 border border-white/5;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .separator {
+      width: 1px;
+      height: 24px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent);
+    }
+    
+    /* Segment effect for streak/rate */
+    .segment {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 2px 8px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="flex items-end justify-center h-screen pb-0">
+
+  <div id="counter-container" class="health-style-container w-[420px] flex items-center justify-between px-6 border-b border-white/10">
+    
+    <!-- Rank Control -->
+    <div class="flex items-center gap-2 skew-text">
+      <div class="flex flex-col gap-0.5">
+         <button onclick="updateRank(1)" class="w-4 h-3 text-[8px] bg-white/5 hover:bg-white/20 rounded-t text-white/40 hover:text-white">▲</button>
+         <button onclick="updateRank(-1)" class="w-4 h-3 text-[8px] bg-white/5 hover:bg-white/20 rounded-b text-white/40 hover:text-white">▼</button>
+      </div>
+      <div id="rank-display" class="text-xs font-black italic uppercase tracking-tighter leading-none min-w-[65px] text-white/80">
+        PLATINUM I
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Stats -->
+    <div class="flex items-center gap-5 skew-text">
+      <!-- Wins -->
+      <div class="flex items-center gap-2">
+        <div class="flex flex-col gap-0.5">
+           <button onclick="updateStat('wins', 1)" class="w-5 h-3.5 bg-white/5 text-white/40 rounded-t text-[9px] hover:bg-win-color/30 hover:text-win-color transition-colors">▲</button>
+           <button onclick="updateStat('wins', -1)" class="w-5 h-3.5 bg-white/5 text-white/40 rounded-b text-[9px] hover:bg-white/10 hover:text-white transition-colors">▼</button>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="win-color text-2xl font-black italic leading-none" id="wins-val">0</span>
+          <span class="text-[7px] text-win-color/40 font-bold -mt-0.5">WINS</span>
+        </div>
+      </div>
+
+      <span class="text-white/10 font-black italic text-lg">/</span>
+
+      <!-- Losses -->
+      <div class="flex items-center gap-2">
+        <div class="flex flex-col gap-0.5">
+           <button onclick="updateStat('losses', 1)" class="w-5 h-3.5 bg-white/5 text-white/40 rounded-t text-[9px] hover:bg-loss-color/30 hover:text-loss-color transition-colors">▲</button>
+           <button onclick="updateStat('losses', -1)" class="w-5 h-3.5 bg-white/5 text-white/40 rounded-b text-[9px] hover:bg-white/10 hover:text-white transition-colors">▼</button>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="loss-color text-2xl font-black italic leading-none" id="losses-val">0</span>
+          <span class="text-[7px] text-loss-color/40 font-bold -mt-0.5">LOSS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Rate & Streak (Segmented Style) -->
+    <div class="flex items-center gap-2 skew-text">
+       <div class="segment flex flex-col items-center min-w-[35px]">
+         <span id="win-rate-val" class="text-white text-xs font-black italic leading-none">0%</span>
+         <span class="text-[6px] text-white/30 uppercase font-bold tracking-tighter">RATE</span>
+       </div>
+       <div class="segment flex flex-col items-center min-w-[35px]">
+         <span id="streak-val" class="text-white text-xs font-black italic leading-none uppercase">---</span>
+         <span class="text-[6px] text-white/30 uppercase font-bold tracking-tighter">STRK</span>
+       </div>
+    </div>
+
+    <!-- Tiny Reset -->
+    <button onclick="resetStats()" class="opacity-0 hover:opacity-100 text-[10px] text-white/10 hover:text-red-500 ml-1 transition-opacity">×</button>
+  </div>
+
+  <script>
+    let stats = { wins: 0, losses: 0 };
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      if (type === 'win') {
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+      } else {
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.2);
+        gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+      }
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.3);
+    }
+
+    function updateStat(key, delta) {
+      stats[key] = Math.max(0, stats[key] + delta);
+      document.getElementById(`${key}-val`).innerText = stats[key];
+      
+      const streakVal = document.getElementById('streak-val');
+      const diff = stats.wins - stats.losses;
+      if (diff > 0) {
+        streakVal.innerText = `${diff}W`;
+        streakVal.className = "text-[#22c55e] text-xs font-black italic leading-none";
+      } else if (diff < 0) {
+        streakVal.innerText = `${Math.abs(diff)}L`;
+        streakVal.className = "text-[#ff4d6d] text-xs font-black italic leading-none";
+      } else {
+        streakVal.innerText = `---`;
+        streakVal.className = "text-white/40 text-xs font-black italic leading-none";
+      }
+
+      const total = stats.wins + stats.losses;
+      const winRate = total === 0 ? 0 : Math.round((stats.wins / total) * 100);
+      const wrEl = document.getElementById('win-rate-val');
+      wrEl.innerText = `${winRate}%`;
+      wrEl.className = "text-xs font-black italic leading-none " + (total > 0 ? (winRate >= 60 ? 'text-[#22c55e]' : (winRate < 45 ? 'text-[#ff4d6d]' : 'text-white')) : 'text-white');
+
+      if (delta > 0) playSound(key === 'wins' ? 'win' : 'loss');
+      saveStats();
+    }
+
+    function resetStats() {
+      if (confirm('Reset session stats?')) {
+        stats.wins = 0; stats.losses = 0;
+        updateStat('wins', 0); updateStat('losses', 0);
+        saveStats();
+      }
+    }
+
+    function saveStats() { localStorage.setItem('marvel_rivals_stats_mini', JSON.stringify(stats)); }
+    function loadStats() {
+      const saved = localStorage.getItem('marvel_rivals_stats_mini');
+      if (saved) { stats = JSON.parse(saved); updateStat('wins', 0); updateStat('losses', 0); }
+    }
+
+    const baseRanks = ["BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND", "GRANDMASTER", "CELESTIAL"];
+    const specialRanks = ["ETERNITY", "ONE ABOVE ALL"];
+    const ranks = ["PLACEMENTS"];
+    baseRanks.forEach(r => { ranks.push(`${r} III`, `${r} II`, `${r} I`); });
+    ranks.push(...specialRanks);
+
+    const rankColors = {
+      "PLACEMENTS": "#86efac", "BRONZE": "#cd7f32", "SILVER": "#c0c0c0", "GOLD": "#ffd700",
+      "PLATINUM": "#a5f3fc", "DIAMOND": "#3b82f6", "GRANDMASTER": "#7e22ce",
+      "CELESTIAL": "#f97316", "ETERNITY": "#d8b4fe", "ONE ABOVE ALL": "#ef4444"
+    };
+
+    let currentRankIndex = 12;
+    function updateRank(delta) {
+      currentRankIndex = (currentRankIndex + delta + ranks.length) % ranks.length;
+      const rankName = ranks[currentRankIndex];
+      const display = document.getElementById('rank-display');
+      display.innerText = rankName;
+      const base = Object.keys(rankColors).find(b => rankName.startsWith(b));
+      if (base) display.style.color = rankColors[base];
+      localStorage.setItem('marvel_rivals_rank_mini', rankName);
+    }
+
+    const savedRank = localStorage.getItem('marvel_rivals_rank_mini');
+    if (savedRank) currentRankIndex = ranks.indexOf(savedRank);
+    if (currentRankIndex === -1) currentRankIndex = 12;
+    updateRank(0);
+    loadStats();
+  </script>
+</body>
+</html>
