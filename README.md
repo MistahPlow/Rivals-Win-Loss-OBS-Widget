@@ -5,6 +5,7 @@ Click the local file box under in browser source
 Find the widget HTML file you downloaded
 right click browser source scroll down to interact to change ranks and numbers in OBS 
 
+<img width="421" height="47" alt="Screenshot_15-7-2026_71322_" src="https://github.com/user-attachments/assets/18562f16-16ea-4836-8e19-b9839eb71fd8" />
 
 
 
